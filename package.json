@@ -71,7 +71,9 @@
   },
   "bugs": "https://github.com/micapam/epic-formulae/issues",
   "keywords": [
-    "oclif"
+    "poetics",
+    "literary studies",
+    "metrical poetry"
   ],
   "types": "dist/index.d.ts"
 }
