@@ -1,6 +1,6 @@
 /* eslint-disable unicorn/prefer-ternary */
 import { Command, Flags } from '@oclif/core'
-import { stringify } from 'csv-stringify/sync';
+import { stringify } from 'csv-stringify/sync'
 import { connect, disconnect } from '../db'
 import { Formula } from '../models/formula'
 import Document from '../document'

@@ -1,7 +1,7 @@
 {
   "name": "epic-formulae",
-  "version": "0.0.0",
-  "description": "changeme",
+  "version": "0.0.1",
+  "description": "Simple data store to house epic formulae",
   "author": "Joshua Mostafa",
   "bin": {
     "formula": "./bin/run"
@@ -51,9 +51,6 @@
     ],
     "topicSeparator": " ",
     "topics": {
-      "hello": {
-        "description": "Say hello to the world and others"
-      },
       "add": {
         "description": "Add a formula to the data store"
       }
