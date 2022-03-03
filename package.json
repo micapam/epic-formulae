@@ -20,12 +20,14 @@
     "@oclif/core": "^1",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-plugins": "^2.0.1",
+    "csv-stringify": "^6.0.5",
     "mongoose": "^6.2.4"
   },
   "devDependencies": {
     "@oclif/test": "^2",
     "@types/chai": "^4",
     "@types/mocha": "^9.0.0",
+    "@types/mongoose": "^5.11.97",
     "@types/node": "^16.9.4",
     "chai": "^4",
     "eslint": "^7.32.0",
@@ -51,11 +53,12 @@
     "topics": {
       "hello": {
         "description": "Say hello to the world and others"
+      },
+      "add": {
+        "description": "Add a formula to the data store"
       }
     },
-    "hooks": {
-      "init": "./src/hooks/init/initialise-db"
-    }
+    "hooks": {}
   },
   "scripts": {
     "build": "shx rm -rf dist && tsc -b",
@@ -63,7 +66,7 @@
     "postpack": "shx rm -f oclif.manifest.json",
     "posttest": "yarn lint",
     "prepack": "yarn build && oclif manifest && oclif readme",
-    "test": "mocha --forbid-only \"test/**/*.test.ts\"",
+    "test": "mocha --forbid-only \"test/**/*.test.ts\" \"test/**/*.test.js\"",
     "version": "oclif readme && git add README.md"
   },
   "engines": {

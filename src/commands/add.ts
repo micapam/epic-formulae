@@ -1,28 +1,43 @@
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
+import { connect, disconnect } from '../db'
+import { Formula } from '../models/formula'
 
 export default class Add extends Command {
-  static description = 'describe the command here'
+  static description = 'Add a formula to the data store'
 
   static examples = [
-    '<%= config.bin %> <%= command.id %>',
+    "$ formula add -m '(-)-uuu' -r Zeus 'cloud-gatherer'",
   ]
 
   static flags = {
-    // flag with a value (-n, --name=VALUE)
-    name: Flags.string({char: 'n', description: 'name to print'}),
-    // flag with no value (-f, --force)
-    force: Flags.boolean({char: 'f'}),
+    metre: Flags.string({
+      char: 'm',
+      description: "Metrical notation: 'u' = breve, '-' = macron, parenthesise ghost syllable if present",
+      required: true,
+    }),
+    referent: Flags.string({
+      char: 'r',
+      description: 'Referent. Keep consistent (including case) across related formulae',
+      required: true,
+    }),
   }
 
-  static args = [{name: 'file'}]
+  static args = [{
+    name: 'text',
+    description: 'Text of the formula',
+    required: true,
+  }]
 
   public async run(): Promise<void> {
-    const {args, flags} = await this.parse(Add)
+    const { args, flags } = await this.parse(Add)
+    const { text } = args
+    const { metre, referent } = flags
 
-    const name = flags.name ?? 'world'
-    this.log(`hello ${name} from /Users/jmostafa/Sync/Projects/Newos Kanmn/Resources/epic-formulae/src/commands/add.ts`)
-    if (args.file && flags.force) {
-      this.log(`you input --force and --file: ${args.file}`)
-    }
+    await connect()
+    const f = new Formula({ text, metre, referent })
+    await f.save()
+
+    this.log(`Created formula: ${f}`)
+    await disconnect()
   }
 }
