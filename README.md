@@ -1,247 +1,64 @@
-oclif-hello-world
-=================
+epic formulae
+=============
 
-oclif example Hello World CLI
+Simple data store to house instances of the poetic device originating in oral poetry known as a 'formula'. The purpose of this library is store a large number of formulae, in order to devise metres that can accommodate them, in an artifical version of the historical process by which poetry came into being[^1].
 
-[![oclif](https://img.shields.io/badge/cli-oclif-brightgreen.svg)](https://oclif.io)
-[![Version](https://img.shields.io/npm/v/oclif-hello-world.svg)](https://npmjs.org/package/oclif-hello-world)
-[![CircleCI](https://circleci.com/gh/oclif/hello-world/tree/main.svg?style=shield)](https://circleci.com/gh/oclif/hello-world/tree/main)
-[![Downloads/week](https://img.shields.io/npm/dw/oclif-hello-world.svg)](https://npmjs.org/package/oclif-hello-world)
-[![License](https://img.shields.io/npm/l/oclif-hello-world.svg)](https://github.com/oclif/hello-world/blob/main/package.json)
+Three elements are stored:
 
-<!-- toc -->
-* [Usage](#usage)
-* [Commands](#commands)
-<!-- tocstop -->
-# Usage
-<!-- usage -->
+* the text of the formula
+* a brief metrical notation using `u` per light and `-` per heavy syllable
+* a simple description of the person or phenomenon to which the formula refers
+
+## Prerequisites
+
+* [NodeJS](https://nodejs.org/en/)
+* [MongoDB](https://www.mongodb.com/try/download/community)
+
+## Installation
+
 ```sh-session
 $ npm install -g epic-formulae
-$ formula COMMAND
-running command...
-$ formula (--version)
-epic-formulae/0.0.0 darwin-x64 node-v17.5.0
-$ formula --help [COMMAND]
-USAGE
-  $ formula COMMAND
-...
-```
-<!-- usagestop -->
-# Commands
-<!-- commands -->
-* [`formula hello PERSON`](#formula-hello-person)
-* [`formula hello world`](#formula-hello-world)
-* [`formula help [COMMAND]`](#formula-help-command)
-* [`formula plugins`](#formula-plugins)
-* [`formula plugins:inspect PLUGIN...`](#formula-pluginsinspect-plugin)
-* [`formula plugins:install PLUGIN...`](#formula-pluginsinstall-plugin)
-* [`formula plugins:link PLUGIN`](#formula-pluginslink-plugin)
-* [`formula plugins:uninstall PLUGIN...`](#formula-pluginsuninstall-plugin)
-* [`formula plugins update`](#formula-plugins-update)
-
-## `formula hello PERSON`
-
-Say hello
-
-```
-USAGE
-  $ formula hello [PERSON] -f <value>
-
-ARGUMENTS
-  PERSON  Person to say hello to
-
-FLAGS
-  -f, --from=<value>  (required) Whom is saying hello
-
-DESCRIPTION
-  Say hello
-
-EXAMPLES
-  $ oex hello friend --from oclif
-  hello friend from oclif! (./src/commands/hello/index.ts)
 ```
 
-_See code: [dist/commands/hello/index.ts](https://github.com/micapam/epic-formulae/blob/v0.0.0/dist/commands/hello/index.ts)_
+## Usage
 
-## `formula hello world`
+Add a formula to the data store:
 
-Say hello world
-
-```
-USAGE
-  $ formula hello world
-
-DESCRIPTION
-  Say hello world
-
-EXAMPLES
-  $ oex hello world
-  hello world! (./src/commands/hello/world.ts)
+```sh-session
+$ formula add -m '--uu' -r 'Zeus' 'loud-thundering'
 ```
 
-## `formula help [COMMAND]`
+Get a list of all formulae in markdown, grouped by referent
 
-Display help for formula.
-
-```
-USAGE
-  $ formula help [COMMAND] [-n]
-
-ARGUMENTS
-  COMMAND  Command to show help for.
-
-FLAGS
-  -n, --nested-commands  Include all nested commands in the output.
-
-DESCRIPTION
-  Display help for formula.
+```sh-session
+$ formula list
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v5.1.11/src/commands/help.ts)_
+Get a list of all formulae in markdown, grouped by metrical value
 
-## `formula plugins`
-
-List installed plugins.
-
-```
-USAGE
-  $ formula plugins [--core]
-
-FLAGS
-  --core  Show core plugins.
-
-DESCRIPTION
-  List installed plugins.
-
-EXAMPLES
-  $ formula plugins
+```sh-session
+$ formula list -g metre
 ```
 
-_See code: [@oclif/plugin-plugins](https://github.com/oclif/plugin-plugins/blob/v2.0.11/src/commands/plugins/index.ts)_
+Get a list of all formulae in CSV format
 
-## `formula plugins:inspect PLUGIN...`
-
-Displays installation properties of a plugin.
-
-```
-USAGE
-  $ formula plugins:inspect PLUGIN...
-
-ARGUMENTS
-  PLUGIN  [default: .] Plugin to inspect.
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  Displays installation properties of a plugin.
-
-EXAMPLES
-  $ formula plugins:inspect myplugin
+```sh-session
+$ formula list -f csv
 ```
 
-## `formula plugins:install PLUGIN...`
+Try `formula add --help` and `formula list --help` for more options.
 
-Installs a plugin into the CLI.
+## Limitations
 
-```
-USAGE
-  $ formula plugins:install PLUGIN...
+It is up to the user to ensure that the metrical notation is correct. Automating phonemic / prosodic analysis is out of scope of this project.
 
-ARGUMENTS
-  PLUGIN  Plugin to install.
-
-FLAGS
-  -f, --force    Run yarn install with force flag.
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  Installs a plugin into the CLI.
-
-  Can be installed from npm or a git url.
-
-  Installation of a user-installed plugin will override a core plugin.
-
-  e.g. If you have a core plugin that has a 'hello' command, installing a user-installed plugin with a 'hello' command
-  will override the core plugin implementation. This is useful if a user needs to update core plugin functionality in
-  the CLI without the need to patch and update the whole CLI.
-
-ALIASES
-  $ formula plugins add
-
-EXAMPLES
-  $ formula plugins:install myplugin 
-
-  $ formula plugins:install https://github.com/someuser/someplugin
-
-  $ formula plugins:install someuser/someplugin
-```
-
-## `formula plugins:link PLUGIN`
-
-Links a plugin into the CLI for development.
+There is no ability to edit or remove formulae once they are added. Currently I'm just doing that using [the MongoDB shell](https://docs.mongodb.com/mongodb-shell/), e.g.:
 
 ```
-USAGE
-  $ formula plugins:link PLUGIN
-
-ARGUMENTS
-  PATH  [default: .] path to plugin
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  Links a plugin into the CLI for development.
-
-  Installation of a linked plugin will override a user-installed or core plugin.
-
-  e.g. If you have a user-installed or core plugin that has a 'hello' command, installing a linked plugin with a 'hello'
-  command will override the user-installed or core plugin implementation. This is useful for development work.
-
-EXAMPLES
-  $ formula plugins:link myplugin
+db.formulae.updateOne(
+  { text: 'loud-thundering' },
+  { $set: { referent: 'Thor' }}
+)
 ```
 
-## `formula plugins:uninstall PLUGIN...`
-
-Removes a plugin from the CLI.
-
-```
-USAGE
-  $ formula plugins:uninstall PLUGIN...
-
-ARGUMENTS
-  PLUGIN  plugin to uninstall
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  Removes a plugin from the CLI.
-
-ALIASES
-  $ formula plugins unlink
-  $ formula plugins remove
-```
-
-## `formula plugins update`
-
-Update installed plugins.
-
-```
-USAGE
-  $ formula plugins update [-h] [-v]
-
-FLAGS
-  -h, --help     Show CLI help.
-  -v, --verbose
-
-DESCRIPTION
-  Update installed plugins.
-```
-<!-- commandsstop -->
+[^1]: According to Gregory Nagy: 'traditional phraseology generated meter rather than vice versa.' From 'Formula and Meter: A Summary' in _Comparative Studies in Greek and Indic Meter_ (Harvard University Press, 1974). [Online version at the Center for Hellenic Studies](https://chs.harvard.edu/chapter/6-formula-and-meter-a-summary/).
