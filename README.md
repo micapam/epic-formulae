@@ -46,7 +46,13 @@ Get a list of all formulae in CSV format
 $ formula list -f csv
 ```
 
-Try `formula add --help` and `formula list --help` for more options.
+Load formula from a CSV file
+
+```sh-session
+$ formula load /path/to/my/file.csv
+```
+
+Try `formula add --help`, `formula list --help` and `formula load --help` for more options.
 
 ## Limitations
 
