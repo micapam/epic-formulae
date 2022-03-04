@@ -27,14 +27,21 @@ const prettySymbol = (char: string) => {
   }
 }
 
-schema.pre('save', function (next) {
-  this.metricalSortKey = this.metre
-    .slice(0, -1)         // Remove the last syllable as it doesn't matter (brevis in longo)
-    .replace(/[()]/g, '') // Remove parentheses (from initial ghost syllable)
-    .split('')
-    .reverse()            // Right-to-left sorting on metre
-    .join('')
+const generateMetricalSortKey = (metre: string) => metre
+  .slice(0, -1)         // Remove the last syllable as it doesn't matter (brevis in longo)
+  .replace(/[()]/g, '') // Remove parentheses (from initial ghost syllable)
+  .split('')
+  .reverse()            // Right-to-left sorting on metre
+  .join('')
 
+schema.pre(['updateOne', 'findOneAndUpdate'], function (next) {
+  const data = this.getUpdate() as { metre: string, metricalSortKey: string }
+  data.metricalSortKey = generateMetricalSortKey(data.metre)
+  next()
+})
+
+schema.pre('save', function (next) {
+  this.metricalSortKey = generateMetricalSortKey(this.metre)
   next()
 })
 
@@ -48,4 +55,6 @@ schema.virtual('prettyMetreForGrouping').get(function (this: IFormula) {
     .join(' ')            // Space out the characters
 })
 
-export const Formula = model<IFormula>('Formula', schema)
+const Formula = model<IFormula>('Formula', schema)
+
+export { Formula, IFormula }

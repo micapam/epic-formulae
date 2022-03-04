@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/prefer-ternary */
 import { Command, Flags } from '@oclif/core'
 import { stringify } from 'csv-stringify/sync'
 import { connect, disconnect } from '../db'
@@ -9,7 +8,9 @@ export default class List extends Command {
   static description = 'List the formulae from the data store'
 
   static examples = [
-    '<%= config.bin %> <%= command.id %>',
+    'formula list',
+    'formula list -g metre',
+    'formula list -f csv',
   ]
 
   static flags = {
@@ -46,11 +47,23 @@ export default class List extends Command {
   }
 
   async findAndGroupByReferent(): Promise<void> {
-    this.log('Not yet implemented')
+    this.document.paragraph('Ordered by referent')
+    const formulae = await Formula.find().sort({ referent: 1 })
+
+    for (const [idx, element] of formulae.entries()) {
+      // this.log(`Working on formula: ${element}`)
+      const lastReferent = idx > 0 ? formulae[idx - 1].referent : ''
+
+      if (element.referent !== lastReferent) {
+        this.document.heading(element.referent)
+      }
+
+      this.document.paragraph(`${element.text} \`${element.metre}\``)
+    }
   }
 
   async generateCsv(group: string): Promise<string> {
-    const rows = [['Formula text', 'Metrical notation', 'Referent']]
+    const rows = [['text', 'metre', 'referent']]
     const sortBy = group === 'metre' ? 'metricalSortKey' : 'referent'
     const formulae = await Formula.find().sort({ [sortBy]: 1 })
 
@@ -74,6 +87,13 @@ export default class List extends Command {
     return this.document.toString()
   }
 
+  async generate(format: string, group: string): Promise<string> {
+    return (format === 'markdown' ?
+      this.generateMarkdown(group) :
+      this.generateCsv(group)
+    )
+  }
+
   writeOutput(body: string): void {
     this.log(body)
   }
@@ -81,17 +101,10 @@ export default class List extends Command {
   public async run(): Promise<void> {
     const { flags } = await this.parse(List)
     const { format, group } = flags
-    let output:string
 
     await connect()
-
-    if (format === 'markdown') {
-      output = await this.generateMarkdown(group)
-    } else {
-      output = await this.generateCsv(group)
-    }
-
-    this.writeOutput(output)
+    const output = await this.generate(format, group)
     await disconnect()
+    this.writeOutput(output)
   }
 }
