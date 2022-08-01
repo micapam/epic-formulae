@@ -20,7 +20,7 @@
     "@oclif/core": "^1",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-plugins": "^2.1.0",
-    "csv-parse": "^5.0.4",
+    "csv-parse": "^5.3.0",
     "csv-stringify": "^6.0.5",
     "mongoose": "^6.2.4"
   },
