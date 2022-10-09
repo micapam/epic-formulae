@@ -28,7 +28,6 @@
     "@oclif/test": "^2",
     "@types/chai": "^4",
     "@types/mocha": "^9.1.0",
-    "@types/mongoose": "^5.11.97",
     "@types/node": "^16.9.4",
     "chai": "^4",
     "eslint": "^7.32.0",

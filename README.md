@@ -1,7 +1,11 @@
 epic formulae
 =============
 
-Simple data store to house instances of the poetic device originating in oral poetry known as a 'formula'. The purpose of this library is store a large number of formulae, in order to devise metres that can accommodate them, in an artifical version of the historical process by which poetry came into being[^1]. This is a personal project to assist in my creative research[^2].
+Simple data store to house instances of the poetic device originating in oral
+poetry known as a 'formula'. The purpose of this library is store a large number
+of formulae, in order to devise metres that can accommodate them, in an
+artifiical version of the historical process by which poetry came into
+being[^1]. This is a personal project to assist in my creative research[^2].
 
 Three elements are stored:
 
@@ -28,16 +32,23 @@ Add a formula to the data store:
 $ formula add -m '--uu' -r 'Zeus' 'loud-thundering'
 ```
 
-Get a list of all formulae in markdown, grouped by referent
+Get a list of all formulae in markdown, grouped by metrical value
 
 ```sh-session
 $ formula list
 ```
 
-Get a list of all formulae in markdown, grouped by metrical value
+Get a list of all formulae in markdown, grouped by metrical value, restricted to
+a maximum of the last four syllables (i.e. ignore prior syllables)
 
 ```sh-session
-$ formula list -g metre
+$ formula list -n 4
+```
+
+Get a list of all formulae in markdown, grouped by referent
+
+```sh-session
+$ formula list -g referent
 ```
 
 Get a list of all formulae in CSV format
@@ -53,6 +64,14 @@ $ formula load /path/to/my/file.csv
 ```
 
 Try `formula add --help`, `formula list --help` and `formula load --help` for more options.
+
+## Running in development
+
+To run the local version just use `./bin/dev` instead of `formula`, e.g.:
+
+```sh-session
+$ ./bin/dev list -n 4
+```
 
 ## Limitations
 

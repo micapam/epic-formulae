@@ -6,6 +6,7 @@ interface IFormula {
   metre: string;
   referent: string;
   metricalSortKey: string;
+  prettyMetre: string;
   prettyMetreForGrouping: string;
 }
 
@@ -19,16 +20,15 @@ const schema = new Schema<IFormula>({
 const prettySymbol = (char: string) => {
   switch (char) {
   case 'u':
-    return '◡'
+    return ' ◡ '
   case '-':
-    return '—'
+    return ' — '
   default:
-    throw new Error(`Invalid character ${char}`)
+    return char
   }
 }
 
 const generateMetricalSortKey = (metre: string) => metre
-  .slice(0, -1)         // Remove the last syllable as it doesn't matter (brevis in longo)
   .replace(/[()]/g, '') // Remove parentheses (from initial ghost syllable)
   .split('')
   .reverse()            // Right-to-left sorting on metre
@@ -49,10 +49,15 @@ schema.virtual('prettyMetreForGrouping').get(function (this: IFormula) {
   return this.metre
     .replace(/[()]/g, '') // Remove parentheses (from initial ghost syllable)
     .split('')
-    .slice(0, -1)         // Remove the last syllable (to be replaced with ×)
     .map((char: string) => prettySymbol(char) as string)
-    .concat(['×'])        // Final syllable can be either, brevis in longo
-    .join(' ')            // Space out the characters
+    .join('')
+})
+
+schema.virtual('prettyMetre').get(function (this: IFormula) {
+  return this.metre
+    .split('')
+    .map((char: string) => prettySymbol(char) as string)
+    .join('')
 })
 
 const Formula = model<IFormula>('Formula', schema)

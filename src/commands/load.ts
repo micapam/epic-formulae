@@ -13,17 +13,23 @@ export default class Load extends Command {
   ]
 
   static flags = {
-    'ignore-header': Flags.boolean({
-      char: 'i',
-      default: true,
-      description: 'Ignore header row in loaded file',
-    }),
+    // ignoreHeader: Flags.boolean({
+    //   char: 'i',
+    //   default: true,
+    //   description: 'Ignore header row in loaded file',
+    // }),
+    wipe: Flags.boolean({
+      char: 'w',
+      default: false,
+      description: 'Wipe existing data before importing',
+    })
   }
 
   static args = [{ name: 'file' }]
 
   public async run(): Promise<void> {
-    const { args: { file } } = await this.parse(Load)
+    const { args: { file }, flags } = await this.parse(Load)
+    const { wipe } = flags
     const data = await readFile(file || '/dev/stdin', 'utf-8')
     const rows = parse(data, {
       columns: true,
@@ -31,6 +37,10 @@ export default class Load extends Command {
     }) as IFormula[]
 
     await connect()
+
+    if (wipe) {
+      await Formula.deleteMany({})
+    }
 
     await Promise.all(rows.map(async ({ text, metre, referent }) =>
       Formula.findOneAndUpdate(

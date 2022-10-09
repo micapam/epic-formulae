@@ -22,27 +22,76 @@ export default class List extends Command {
     }),
     group: Flags.string({
       char: 'g',
-      default: 'referent',
+      default: 'metre',
       description: 'Group results',
       options: ['metre', 'referent'],
     }),
+    numSyllables: Flags.integer({
+      char: 'n',
+      default: 0,
+      description: 'Restrict syllables to a certain number for grouping',
+    })
   }
 
   document: Document = new Document('Formulae')
 
-  async findAndGroupByMetre(): Promise<void> {
-    this.document.paragraph('Ordered by metre')
+  abbreviateMetricalSortKey(metre: string, numSyllables: number): string {
+    if (numSyllables === 0) return metre
+
+    return metre.slice(0, numSyllables)
+  }
+
+  abbreviatePrettyMetre(prettyMetre: string, numSyllables: number): string {
+    if (numSyllables === 0) return prettyMetre
+
+    return prettyMetre
+      .split(' ')
+      .join('')
+      .slice(-numSyllables)
+      .split('')
+      .join(' ')
+  }
+
+  async findAndGroupByMetre(numSyllables: number): Promise<void> {
+    let heading = 'Ordered by metre'
+    if (numSyllables > 0) {
+      heading = `${heading} (max syllables: ${numSyllables})`
+    }
+
+    this.document.paragraph(heading)
     const formulae = await Formula.find().sort({ metricalSortKey: 1 })
 
-    for (const [idx, element] of formulae.entries()) {
-      // this.log(`Working on formula: ${element}`)
-      const lastPrettyMetre = idx > 0 ? formulae[idx - 1].prettyMetreForGrouping : ''
+    let lastMetre
 
-      if (element.prettyMetreForGrouping !== lastPrettyMetre) {
-        this.document.heading(element.prettyMetreForGrouping)
+    for (const [idx, element] of formulae.entries()) {
+      // const lastMetre = this.abbreviateMetricalSortKey(
+      //   idx > 0 ? formulae[idx - 1].metricalSortKey : '',
+      //   numSyllables,
+      // )
+
+      const metre = this.abbreviateMetricalSortKey(
+        element.metricalSortKey,
+        numSyllables,
+      )
+
+      if (metre.length < numSyllables) continue
+
+      if (metre !== lastMetre) {
+        this.document.heading(this.abbreviatePrettyMetre(
+          element.prettyMetreForGrouping,
+          numSyllables,
+        ))
+
+        lastMetre = metre
       }
 
-      this.document.paragraph(`${element.text} _(${element.referent})_`)
+      const entry = [element.text, `_(${element.referent})_`]
+
+      if (numSyllables > 0 && element.metricalSortKey.length > metre.length) {
+        entry.push(`**${element.prettyMetre.trim()}**`)
+      }
+
+      this.document.paragraph(entry.join(' '))
     }
   }
 
@@ -78,18 +127,20 @@ export default class List extends Command {
     return stringify(rows)
   }
 
-  async generateMarkdown(group: string): Promise<string> {
+  async generateMarkdown(group: string, numSyllables: number): Promise<string> {
     await (group === 'metre' ?
-      this.findAndGroupByMetre() :
+      this.findAndGroupByMetre(numSyllables) :
       this.findAndGroupByReferent()
     )
 
     return this.document.toString()
   }
 
-  async generate(format: string, group: string): Promise<string> {
+  async generate(
+    format: string, group: string, numSyllables: number
+  ): Promise<string> {
     return (format === 'markdown' ?
-      this.generateMarkdown(group) :
+      this.generateMarkdown(group, numSyllables) :
       this.generateCsv(group)
     )
   }
@@ -100,10 +151,10 @@ export default class List extends Command {
 
   public async run(): Promise<void> {
     const { flags } = await this.parse(List)
-    const { format, group } = flags
+    const { format, group, numSyllables } = flags
 
     await connect()
-    const output = await this.generate(format, group)
+    const output = await this.generate(format, group, numSyllables)
     await disconnect()
     this.writeOutput(output)
   }
