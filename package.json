@@ -22,7 +22,7 @@
     "@oclif/plugin-plugins": "^2.1.0",
     "csv-parse": "^5.0.4",
     "csv-stringify": "^6.0.5",
-    "mongoose": "^6.2.4"
+    "mongoose": "^6.7.0"
   },
   "devDependencies": {
     "@oclif/test": "^2",
