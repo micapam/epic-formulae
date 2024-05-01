@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+message: If you use this software, please cite it as below.
+authors:
+  - family-names: Mostafa
+    given-names: Joshua
+    orcid: https://orcid.org/0009-0005-9790-4456
+title: "Epic formulae"
+version: 1.0.0
+keywords:
+  - versification
+  - poetics
+  - metrical poetry
+  - prosody
+repository-code: https://github.com/micapam/epic-formulae
+type: software
+date-released: 2022-03-02
